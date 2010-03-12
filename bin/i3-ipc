@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+# encoding: utf-8
+
+require 'i3-ipc'
+I3::Runner.execute(*ARGV)
