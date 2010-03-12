@@ -29,7 +29,7 @@ Contributing
 
 Once you've made your great commits:
 
-1. [Fork][0] the prject.
+1. [Fork][0] the project.
 2. Create a topic branch - `git checkout -b my_branch`
 3. Push to your branch - `git push origin my_branch`
 4. Create an [Issue][1] with a link to your branch
