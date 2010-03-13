@@ -1,6 +1,7 @@
 require 'socket'
 require 'json'
 require 'i3-ipc/runner'
+require 'i3-ipc/manpage'
 require 'i3-ipc/version'
 
 module I3

@@ -35,6 +35,10 @@ module I3
           quiet = q
         end
 
+        opts.on('-m', '--man', 'Print manual') do
+          I3::Manpage.display("i3-ipc")
+        end
+
         opts.on('-h', '--help', 'Display this screen') do
           puts opts
           exit

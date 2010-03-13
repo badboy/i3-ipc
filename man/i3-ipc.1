@@ -1,0 +1,88 @@
+.\" generated with Ronn/v0.4.1
+.\" http://github.com/rtomayko/ronn/
+.
+.TH "I3\-IPC" "1" "March 2010" "badboy" "i3-ipc Manual"
+.
+.SH "NAME"
+\fBi3\-ipc\fR \-\- inter\-process communication with i3
+.
+.SH "SYNOPSIS"
+\fBi3\-ipc\fR [\fB\-s\fR] [\fB\-t type\fR] [\fB\-p\fR] [\fB\-j\fR] [\fB\-q\fR] [\fBmessage\fR]
+.
+.SH "DESCRIPTION"
+\fBi3\-ipc\fR can be used to communicate with i3, the improved tiling window manager, through the provided ipc socket. Useful for scripting the window manager.
+.
+.P
+Currently implemented message types of i3 are the following:
+.
+.TP
+\fB0 (COMMAND)\fR
+  The payload of the message is a command for i3
+  (like the commands you can bind to keys in the configuration file)
+  The command will be executed directly after receiving it.
+  The reply will be always {"succes":true} for now.
+.
+.TP
+\fB1 (GET_WORKSPACES)\fR
+  Gets the current workspaces.
+  The reply will be a JSON\-encoded list of workspaces (see the reply section).
+.
+.SH "OPTIONS"
+\fBi3\-ipc\fR's default mode of operation is to send the command (type 0) specified on the command line.
+.
+.P
+These options can be used to change this behavior:
+.
+.TP
+\fB\-s\fR, \fB\-\-socket\fR
+Set the socket file, defaults to /tmp/i3\-ipc.sock
+.
+.TP
+\fB\-t\fR, \fB\-\-type\fR
+Set the type. Passing a type of 0 is the default and will send the specified command, type 1 gets the current workspace list.
+.
+.TP
+\fB\-p\fR, \fB\-\-pretty\-print\fR
+This will pretty print the received reply. Useful for the workspace list.
+.
+.TP
+\fB\-j\fR, \fB\-\-json\fR
+This will print the received reply as raw json\-encoded data. Useful to pass to another script.
+.
+.TP
+\fB\-q\fR, \fB\-\-quiet\fR
+Turn off the output. Useful for command mode.
+.
+.TP
+\fBmessage\fR
+This is the actual command to send as defined by i3
+.
+.P
+You may additionally ask for help:
+.
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Print help.
+.
+.TP
+\fB\-m\fR, \fB\-\-man\fR
+Display this man page.
+.
+.SH "EXAMPLES"
+.
+.nf
+$ i3\-ipc \-t 1
+$ i3\-ipc \-t 1 \-p
+$ i3\-ipc \-t 1 \-j
+$ i3\-ipc "exec xterm"
+.
+.fi
+.
+.SH "BUGS"
+\fIhttp://github.com/badboy/i3\-ipc/issues\fR
+.
+.SH "AUTHOR"
+Jan\-Erik Rediger:: badboy@archlinux.us
+.
+.SH "SEE ALSO"
+i3(1), i3\-msg(1), \fIhttp://i3.zekjur.net/\fR, \fIhttp://github.com/badboy/i3\-ipc\fR

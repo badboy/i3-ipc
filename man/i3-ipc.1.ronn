@@ -1,0 +1,73 @@
+i3-ipc(1) -- inter-process communication with i3
+================================================
+
+## SYNOPSIS
+
+`i3-ipc` [`-s`] [`-t type`] [`-p`] [`-j`] [`-q`] [`message`]
+
+## DESCRIPTION
+
+`i3-ipc` can be used to communicate with i3, the improved tiling window manager, through the provided ipc socket. Useful for scripting the window manager.
+
+
+Currently implemented message types of i3 are the following:
+
+  * `0 (COMMAND)`:
+      The payload of the message is a command for i3
+      (like the commands you can bind to keys in the configuration file) 
+      The command will be executed directly after receiving it.
+      The reply will be always {"succes":true} for now.
+  * `1 (GET_WORKSPACES)`:
+      Gets the current workspaces. 
+      The reply will be a JSON-encoded list of workspaces (see the reply section).
+
+## OPTIONS
+
+`i3-ipc`'s default mode of operation is to send the command (type 0) specified on the command line.
+
+These options can be used to change this behavior:
+
+  * `-s`, `--socket`:
+    Set the socket file, defaults to /tmp/i3-ipc.sock
+
+  * `-t`, `--type`:
+    Set the type. Passing a type of 0 is the default and will send the specified command, type 1 gets the current workspace list.
+
+  * `-p`, `--pretty-print`:
+    This will pretty print the received reply. Useful for the workspace list.
+
+  * `-j`, `--json`:
+    This will print the received reply as raw json-encoded data. Useful to pass to another script.
+
+  * `-q`, `--quiet`:
+    Turn off the output. Useful for command mode.
+
+  * `message`:
+    This is the actual command to send as defined by i3
+
+You may additionally ask for help:
+
+  * `-h`, `--help`:
+    Print help.
+
+  * `-m`, `--man`:
+    Display this man page.
+
+## EXAMPLES
+
+    $ i3-ipc -t 1
+    $ i3-ipc -t 1 -p
+    $ i3-ipc -t 1 -j
+    $ i3-ipc "exec xterm"
+
+## BUGS
+
+<http://github.com/badboy/i3-ipc/issues>
+
+## AUTHOR
+
+Jan-Erik Rediger:: badboy@archlinux.us
+
+## SEE ALSO
+
+i3(1), i3-msg(1), <http://i3.zekjur.net/>, <http://github.com/badboy/i3-ipc>
