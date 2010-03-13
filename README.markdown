@@ -24,12 +24,12 @@ Use
     i3-ipc -t 1 -j
     i3-ipc "exec xterm"
 
-Read the [man-page]() for more information.
+Read the [man-page][] for more information.
 
 Subscribing
 -----------
 
-As of commit [3db4890]() i3 added events.
+As of commit [3db4890][] i3 added events.
 For now there's only one event: `workspace`.
 
 According to the documentation:
@@ -72,7 +72,7 @@ For example you can use the following code to get the actual focused screen:
       end
     end
 
-A full example of how this can be used for the workspace bar can be found in the `examples` directory.
+A full example of how this can be used for the workspace bar can be found in the [examples][] directory.
 
 You can use `EM.stop` to stop the connection.
 
@@ -89,10 +89,10 @@ Contributing
 
 Once you've made your great commits:
 
-1. [Fork]() the project.
+1. [Fork][] the project.
 2. Create a topic branch - `git checkout -b my_branch`
 3. Push to your branch - `git push origin my_branch`
-4. Create an [Issue]() with a link to your branch
+4. Create an [Issue][] with a link to your branch
 5. That's it!
 
 Copyright
@@ -104,5 +104,6 @@ Copyright (c) 2010 Jan-Erik Rediger. See LICENSE for details.
 [manpage]: http://badboy.github.com/i3-ipc/
 [3db4890]: http://code.stapelberg.de/git/i3/commit/?h=next&id=3db4890683e87
 [em]: http://github.com/eventmachine/eventmachine
+[examples]: http://github.com/badboy/i3-ipc/tree/bug/examples/
 [fork]: http://help.github.com/forking/
 [issue]: http://github.com/badboy/i3-ipc/issues
