@@ -5,13 +5,13 @@ module I3
     PREAMBLE = <<-preamble
 #!/usr/bin/env ruby
 #
-# This file, gist, is generated code.
+# This file, i3-ipc, is generated code.
 # Please DO NOT EDIT or send patches for it.
 #
 # Please take a look at the source from
 # http://github.com/badboy/i3-ipc
 # and submit patches against the individual files
-# that build gist.
+# that build i3-ipc.
 #
 
 preamble
@@ -33,10 +33,16 @@ preamble
 
       standalone = ''
       standalone << PREAMBLE
+      file_dir = File.expand_path(File.dirname(__FILE__))
+      exclude_files = %w(subscription.rb)
+
+      exclude_file_list = exclude_files.map { |file|
+        File.join(file_dir, file)
+      } + [File.expand_path(__FILE__)]
 
       Dir["#{root}/../**/*.rb"].each do |file|
         # skip standalone.rb
-        next if File.expand_path(file) == File.expand_path(__FILE__)
+        next if exclude_file_list.include?(File.expand_path(file))
 
         File.readlines(file).each do |line|
           next if line =~ /^\s*#/
