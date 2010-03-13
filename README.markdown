@@ -24,7 +24,7 @@ Use
     i3-ipc -t 1 -j
     i3-ipc "exec xterm"
 
-Read the [man-page][] for more information.
+Read the [man-page][man] for more information.
 
 Subscribing
 -----------
@@ -101,7 +101,7 @@ Copyright
 Copyright (c) 2010 Jan-Erik Rediger. See LICENSE for details.
 
 [i3]: http://i3.zekjur.net/
-[manpage]: http://badboy.github.com/i3-ipc/
+[man]: http://badboy.github.com/i3-ipc/
 [3db4890]: http://code.stapelberg.de/git/i3/commit/?h=next&id=3db4890683e87
 [em]: http://github.com/eventmachine/eventmachine
 [examples]: http://github.com/badboy/i3-ipc/tree/bug/examples/
