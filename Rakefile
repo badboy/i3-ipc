@@ -55,7 +55,7 @@ end
 Rake.application.remove_task(:install)
 
 desc "Install standalone script and man pages"
-task :install => :standalone do
+task :install => "build:standalone" do
   prefix = ENV['PREFIX'] || ENV['prefix'] || '/usr/local'
 
   FileUtils.mkdir_p "#{prefix}/bin"
@@ -83,4 +83,9 @@ task :pages => [ "build:man" ] do
   `git push origin gh-pages`
   `git checkout master`
   puts :done
+end
+
+desc "fire up IRB console"
+task :console do
+  exec "irb -Ilib -ri3-ipc"
 end
