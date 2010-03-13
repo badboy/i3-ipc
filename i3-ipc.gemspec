@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name              = "i3-ipc"
-  s.version           = "0.0.2"
-  s.date              = "2010-03-12"
+  s.version           = "0.1.0"
+  s.date              = "2010-03-14"
   s.summary           = "inter-process communication with i3, the improved tiling window manager."
   s.homepage          = "http://github.com/badboy/i3-ipc"
   s.email             = "badboy@archlinux.us"
@@ -18,4 +18,6 @@ Gem::Specification.new do |s|
   s.description       = <<desc
   uses the ipc socket of i3 to send commands or get information directly from the window manager. Useful for scripting the window manager.'
 desc
+
+  s.add_dependency "eventmachine", [">= 0.12.10"]
 end

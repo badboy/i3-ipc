@@ -1,12 +1,12 @@
 #!/usr/bin/env ruby
 #
-# This file, gist, is generated code.
+# This file, i3-ipc, is generated code.
 # Please DO NOT EDIT or send patches for it.
 #
 # Please take a look at the source from
 # http://github.com/badboy/i3-ipc
 # and submit patches against the individual files
-# that build gist.
+# that build i3-ipc.
 #
 
 module I3
@@ -79,7 +79,7 @@ module I3
   end
 end
 module I3
-  Version = '0.0.2'
+  Version = '0.1.0'
 end
 require 'optparse'
 
@@ -163,28 +163,44 @@ require 'json'
 module I3
   class IPC
     MAGIC_STRING = "i3-ipc"
+    SOCKET_PATH = "/tmp/i3-ipc.sock"
 
-    class WrongAnswer < RuntimeError; end # :nodoc:
+    MESSAGE_TYPE_COMMAND = 0
+    MESSAGE_TYPE_GET_WORKSPACES = 1
+    MESSAGE_TYPE_SUBSCRIBE = 2
+
+    MESSAGE_REPLY_COMMAND = 0
+    MESSAGE_REPLY_GET_WORKSPACES = 1
+    MESSAGE_REPLY_SUBSCRIBE = 2
+
+    EVENT_MASK = (1 << 31)
+    EVENT_WORKSPACE = (EVENT_MASK | 0)
+
+    class WrongMagicCode < RuntimeError; end # :nodoc:
     class WrongType < RuntimeError; end # :nodoc:
 
-    def initialize(socket_path="/tmp/i3-ipc.sock", force_connect=false)
+    def initialize(socket_path=SOCKET_PATH, force_connect=false)
       @socket_path = socket_path
       connect if connect
     end
 
-    def message(payload)
-      write format(0, payload)
-      handle_response 0
+    def self.subscribe(list, socket_path=SOCKET_PATH, &blk)
+      Subscription.subscribe(list, socket_path, &blk)
+    end
+
+    def command(payload)
+      write format(MESSAGE_TYPE_COMMAND, payload)
+      handle_response MESSAGE_TYPE_COMMAND
     end
 
     def get_workspace
-      write format(1)
-      handle_response 1
+      write format(MESSAGE_TYPE_GET_WORKSPACES)
+      handle_response MESSAGE_TYPE_GET_WORKSPACES
     end
 
     def handle_response(type)
       buffer = @socket.read 14
-      raise WrongAnswer unless buffer[0, ("i3-ipc".length)]
+      raise WrongMagicCode unless buffer[0, (MAGIC_STRING.length)] == MAGIC_STRING
 
       len, recv_type = buffer[6..-1].unpack("LL")
       raise WrongType unless recv_type == type
@@ -193,11 +209,30 @@ module I3
       ::JSON.parse(answer)
     end
 
-    def format(type, payload=nil)
+    def self.format(type, payload=nil)
       size = payload ? payload.to_s.bytes.count : 0
-      msg = "i3-ipc%s" % [size, type].pack("LL")
+      msg = MAGIC_STRING + [size, type].pack("LL")
       msg << payload.to_s if payload
       msg
+    end
+
+    def format(type, payload=nil)
+      self.class.format(type, payload)
+    end
+
+    def self.parse_response(response)
+      if response[0, (MAGIC_STRING.length)] != MAGIC_STRING
+        raise WrongMagicCode
+      end
+
+      len, recv_type = response[6, 8].unpack("LL")
+
+      answer = response[14, len]
+      [recv_type, ::JSON.parse(answer)]
+    end
+
+    def parse_response(response)
+      self.class.parse_response(response)
     end
 
     def write(msg)
