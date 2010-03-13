@@ -1,0 +1,5 @@
+*~
+*.swp
+rdoc
+pkg
+dist
