@@ -104,6 +104,6 @@ Copyright (c) 2010 Jan-Erik Rediger. See LICENSE for details.
 [man]: http://badboy.github.com/i3-ipc/
 [3db4890]: http://code.stapelberg.de/git/i3/commit/?h=next&id=3db4890683e87
 [em]: http://github.com/eventmachine/eventmachine
-[examples]: http://github.com/badboy/i3-ipc/tree/bug/examples/
+[examples]: http://github.com/badboy/i3-ipc/tree/master/examples/
 [fork]: http://help.github.com/forking/
 [issue]: http://github.com/badboy/i3-ipc/issues
