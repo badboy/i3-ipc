@@ -53,7 +53,7 @@ module I3
     # gets the current workspaces.
     # the reply will be the list of workspaces
     # (see the reply section of i3 docu)
-    def get_workspace
+    def get_workspaces
       write format(MESSAGE_TYPE_GET_WORKSPACES)
       handle_response MESSAGE_TYPE_GET_WORKSPACES
     end
@@ -70,13 +70,13 @@ module I3
     def handle_response(type)
       # reads 14 bytes
       # length of "i3-ipc" + 4 bytes length + 4 bytes type
-      buffer = @socket.read 14
+      buffer = read 14
       raise WrongMagicCode unless buffer[0, (MAGIC_STRING.length)] == MAGIC_STRING
 
       len, recv_type = buffer[6..-1].unpack("LL")
       raise WrongType unless recv_type == type
 
-      answer = @socket.read(len)
+      answer = read len
       ::JSON.parse(answer)
     end
 
@@ -120,6 +120,10 @@ module I3
     def write(msg)
       connect if @socket.nil? || closed?
       @last_write_length = @socket.write msg
+    end
+
+    def read(len)
+      @socket.read(len)
     end
 
     # connects to the given socket
