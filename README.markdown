@@ -16,6 +16,11 @@ Old school (for the cli script only):
     chmod 755 i3-ipc &&
     mv i3-ipc /usr/local/bin/i3-ipc
 
+If you're on [Arch Linux][arch], you can use the AUR package:
+
+    curl http://aur.archlinux.org/packages/i3-ipc/i3-ipc/PKGBUILD &&
+    makepkg -i
+
 Use
 ---
 
@@ -101,6 +106,7 @@ Copyright
 Copyright (c) 2010 Jan-Erik Rediger. See LICENSE for details.
 
 [i3]: http://i3.zekjur.net/
+[arch]: http://www.archlinux.org/
 [man]: http://badboy.github.com/i3-ipc/
 [3db4890]: http://code.stapelberg.de/git/i3/commit/?h=next&id=3db4890683e87
 [em]: http://github.com/eventmachine/eventmachine
