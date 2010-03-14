@@ -56,9 +56,9 @@ module I3
 
         payload = args.shift
 
-        puts s.message(payload) unless quiet
+        puts s.command(payload) unless quiet
       elsif type == 1
-        workspaces = s.get_workspace
+        workspaces = s.get_workspaces
         if output == :pretty_print
           require 'pp'
           pp workspaces

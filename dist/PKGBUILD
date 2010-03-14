@@ -1,6 +1,6 @@
 # Maintainer: Jan-Erik Rediger <badboy at archlinux dot us>
 pkgname=i3-ipc
-pkgver=0.1.0
+pkgver=0.1.1
 pkgrel=1
 pkgdesc="inter-process communication with i3, the improved tiling window manager."
 arch=('x86_64' 'i686')

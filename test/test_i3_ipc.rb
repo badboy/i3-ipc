@@ -42,6 +42,9 @@ class TestI3IPC < Test::Unit::TestCase
       end
     end
 
+    # The following tests need a running i3 instance
+    # with at least one workspace
+
     should "correctly send a command" do
       i3 = I3::IPC.new
       assert_equal({ "success" => true }, i3.command("l"))

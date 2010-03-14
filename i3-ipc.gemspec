@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name              = "i3-ipc"
-  s.version           = "0.1.0"
+  s.version           = "0.1.1"
   s.date              = "2010-03-14"
   s.summary           = "inter-process communication with i3, the improved tiling window manager."
   s.homepage          = "http://github.com/badboy/i3-ipc"
@@ -20,4 +20,6 @@ Gem::Specification.new do |s|
 desc
 
   s.add_dependency "eventmachine", [">= 0.12.10"]
+  s.add_dependency "shoulda", [">= 2.10.3"]
+  s.add_dependency "mocha", [">= 0.9.8"]
 end
