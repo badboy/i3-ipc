@@ -3,3 +3,5 @@
 *.swo
 rdoc
 pkg
+dist/*
+!dist/PKGBUILD
