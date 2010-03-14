@@ -1,9 +1,9 @@
 # Maintainer: Jan-Erik Rediger <badboy at archlinux dot us>
 pkgname=i3-ipc
-pkgver=0.1.1
+pkgver=0.1.2
 pkgrel=1
 pkgdesc="inter-process communication with i3, the improved tiling window manager."
-arch=('x86_64' 'i686')
+arch=(any)
 url="http://github.com/badboy/i3-ipc"
 license=('custom')
 depends=('i3' 'ruby')
@@ -12,13 +12,12 @@ http://github.com/badboy/i3-ipc/raw/master/i3-ipc
 http://github.com/badboy/i3-ipc/raw/master/man/i3-ipc.1
 http://github.com/badboy/i3-ipc/raw/master/LICENSE
 )
-noextract=(i3-ipc i3-ipc.1 LICENSE)
-md5sums=('845b0b512ce83f258ec95f74b1db2a48'
+md5sums=('aa9cecdb7c1591e064fdb5bc54ac4b67'
          '440fc2248e9e796307b13de0c15aa7e6'
          '2fde1ca125088725e39018124051d000')
 
 build() {
-  cd "$srcdir/$pkgname-$pkgver"
+  cd "$srcdir/"
 
   install -Dm755 i3-ipc \
   ${pkgdir}/usr/bin/i3-ipc || return 1
