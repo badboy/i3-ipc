@@ -79,7 +79,7 @@ module I3
   end
 end
 module I3
-  Version = '0.1.0'
+  Version = '0.1.2'
 end
 require 'optparse'
 
