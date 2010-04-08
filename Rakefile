@@ -9,7 +9,7 @@ begin
   task :publish => :gemcutter do
     require File.dirname(__FILE__) + '/lib/i3-ipc/version'
 
-    system "git tag v#{I3::Version}"
+    sh "git tag v#{I3::Version}"
     sh "git push origin master --tags"
     sh "git clean -fd"
     exec "rake pages"
