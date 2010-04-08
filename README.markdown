@@ -26,7 +26,7 @@ Use
 
     i3-ipc -t 1
     i3-ipc -t 1 -p
-    i3-ipc -t 1 -j
+    i3-ipc -t 3 -j
     i3-ipc "exec xterm"
 
 Read the [man-page][man] for more information.
@@ -35,10 +35,14 @@ Subscribing
 -----------
 
 As of commit [3db4890][] i3 added events.
-For now there's only one event: `workspace`.
+For now there's only two events: `workspace` and `focus`.
 
 According to the documentation:
-> This event is sent when the user switches to a different workspace, when a new workspace is initialized or when a workspace is removed (because the last client vanished).
+> workspace
+>   Sent when the user switches to a different workspace, when a new workspace is initialized or when a workspace is removed (because the last client vanished).
+> output
+>   Sent when RandR issues a change notification (of either screens, outputs, CRTCs or output properties).
+
 
 i3-ipc uses [EventMachine][em] to receive and handle these events.
 
@@ -55,9 +59,10 @@ To send data to the socket, you need to use `em.send_data`.
 * `type` is the received message type.
 This could be one of
   * MESSAGE_REPLY_COMMAND
-  * MESSAGE_REPLY_COMMAND
-  * MESSAGE_REPLY_COMMAND
-  * EVENT_WORKSPACE #_
+  * MESSAGE_REPLY_GET_WORKSPACES
+  * MESSAGE_REPLY_SUBSCRIBE
+  * MESSAGE_REPLY_GET_OUTPUTS
+  * EVENT_WORKSPACE
 * `data` is the received data, already parsed.
 
 For example you can use the following code to get the actual focused screen:
