@@ -13,10 +13,12 @@ module I3
     MESSAGE_TYPE_COMMAND = 0
     MESSAGE_TYPE_GET_WORKSPACES = 1
     MESSAGE_TYPE_SUBSCRIBE = 2
+    MESSAGE_TYPE_GET_OUTPUTS = 3
 
     MESSAGE_REPLY_COMMAND = 0
     MESSAGE_REPLY_GET_WORKSPACES = 1
     MESSAGE_REPLY_SUBSCRIBE = 2
+    MESSAGE_REPLY_GET_OUTPUTS = 3
 
     EVENT_MASK = (1 << 31)
     EVENT_WORKSPACE = (EVENT_MASK | 0)
@@ -56,6 +58,15 @@ module I3
     def get_workspaces
       write format(MESSAGE_TYPE_GET_WORKSPACES)
       handle_response MESSAGE_TYPE_GET_WORKSPACES
+    end
+
+    # Gets the current outputs.
+    # The reply will be a JSON-encoded list
+    # of outputs
+    # (see the reply section of i3 docu).
+    def get_outputs
+      write format(MESSAGE_TYPE_GET_OUTPUTS)
+      handle_response MESSAGE_TYPE_GET_OUTPUTS
     end
 
     # reads the reply from the socket

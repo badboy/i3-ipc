@@ -36,7 +36,11 @@ class TestI3IPC < Test::Unit::TestCase
   end
 
   context "An instance of the I3::IPC class" do
-    should "raise a Errno::ENOENT exception when wrong socket path is given" do
+    setup do
+      @i3 = I3::IPC.new
+    end
+
+    should "raise an Errno::ENOENT exception with wrong socket path" do
       assert_raise Errno::ENOENT do
         i3 = I3::IPC.new("/tmp/wrong_path.sock", true)
       end
@@ -46,19 +50,26 @@ class TestI3IPC < Test::Unit::TestCase
     # with at least one workspace
 
     should "correctly send a command" do
-      i3 = I3::IPC.new
-      assert_equal({ "success" => true }, i3.command("l"))
+      assert_equal({ "success" => true }, @i3.command("l"))
     end
 
     should "correctly get the workspace list" do
-      i3 = I3::IPC.new
-
       assert_nothing_raised do
-        ws = i3.get_workspaces
+        ws = @i3.get_workspaces
         assert_equal Array, ws.class
         assert_equal Hash, ws.first.class
         assert_equal true, ws.size > 0
         assert_equal true, ws.select{|e|e["focused"]}.size > 0
+      end
+    end
+
+    should "correctly get the output list" do
+      assert_nothing_raised do
+        out = @i3.get_outputs
+        assert_equal Array, out.class
+        assert_equal Hash, out.first.class
+        assert_equal true, out.size > 0
+        assert_equal true, out.select{|e|e["active"]}.size > 0
       end
     end
 
