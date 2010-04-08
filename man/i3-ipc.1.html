@@ -81,7 +81,10 @@
   The command will be executed directly after receiving it.
   The reply will be always {"succes":true} for now.</dd>
 <dt><code>1 (GET_WORKSPACES)</code></dt><dd>  Gets the current workspaces.
-  The reply will be a JSON-encoded list of workspaces (see the reply section).</dd>
+  The reply will be a JSON-encoded list of workspaces.</dd>
+<dt><code>2 (SUBSCRIBE)</code></dt><dd>  Subscribes your connection to the <code>workspace</code> event.</dd>
+<dt><code>3 (GET_OUTPUTS)</code></dt><dd>  Gets the current outputs.
+  The reply will be a JSON-encoded list of outputs.</dd>
 </dl>
 
 
@@ -93,7 +96,8 @@
 
 <dl>
 <dt><code>-s</code>, <code>--socket</code></dt><dd><p>Set the socket file, defaults to /tmp/i3-ipc.sock</p></dd>
-<dt><code>-t</code>, <code>--type</code></dt><dd><p>Set the type. Passing a type of 0 is the default and will send the specified command, type 1 gets the current workspace list.</p></dd>
+<dt><code>-t</code>, <code>--type</code></dt><dd><p>Set the type. Passing a type of 0 is the default and will send the specified command, type 1 gets the current workspace list,
+type 2 subscribes to the workspace stream, type 3 gets the current output list.</p></dd>
 <dt><code>-p</code>, <code>--pretty-print</code></dt><dd><p>This will pretty print the received reply. Useful for the workspace list.</p></dd>
 <dt><code>-j</code>, <code>--json</code></dt><dd><p>This will print the received reply as raw json-encoded data. Useful to pass to another script.</p></dd>
 <dt><code>-q</code>, <code>--quiet</code></dt><dd><p>Turn off the output. Useful for command mode.</p></dd>
@@ -112,8 +116,8 @@
 <h2>EXAMPLES</h2>
 
 <pre><code>$ i3-ipc -t 1
-$ i3-ipc -t 1 -p
-$ i3-ipc -t 1 -j
+$ i3-ipc -t 2 -p
+$ i3-ipc -t 3 -j
 $ i3-ipc "exec xterm"
 </code></pre>
 

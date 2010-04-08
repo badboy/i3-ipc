@@ -25,7 +25,16 @@ Currently implemented message types of i3 are the following:
 .TP
 \fB1 (GET_WORKSPACES)\fR
   Gets the current workspaces.
-  The reply will be a JSON\-encoded list of workspaces (see the reply section).
+  The reply will be a JSON\-encoded list of workspaces.
+.
+.TP
+\fB2 (SUBSCRIBE)\fR
+  Subscribes your connection to the \fBworkspace\fR event.
+.
+.TP
+\fB3 (GET_OUTPUTS)\fR
+  Gets the current outputs.
+  The reply will be a JSON\-encoded list of outputs.
 .
 .SH "OPTIONS"
 \fBi3\-ipc\fR's default mode of operation is to send the command (type 0) specified on the command line.
@@ -39,7 +48,8 @@ Set the socket file, defaults to /tmp/i3\-ipc.sock
 .
 .TP
 \fB\-t\fR, \fB\-\-type\fR
-Set the type. Passing a type of 0 is the default and will send the specified command, type 1 gets the current workspace list.
+Set the type. Passing a type of 0 is the default and will send the specified command, type 1 gets the current workspace list,
+type 2 subscribes to the workspace stream, type 3 gets the current output list.
 .
 .TP
 \fB\-p\fR, \fB\-\-pretty\-print\fR
@@ -73,8 +83,8 @@ Display this man page.
 .nf
 
 $ i3\-ipc \-t 1
-$ i3\-ipc \-t 1 \-p
-$ i3\-ipc \-t 1 \-j
+$ i3\-ipc \-t 2 \-p
+$ i3\-ipc \-t 3 \-j
 $ i3\-ipc "exec xterm"
 .
 .fi
