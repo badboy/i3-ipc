@@ -1,7 +1,8 @@
+require 'lib/i3-ipc/version'
 Gem::Specification.new do |s|
   s.name              = "i3-ipc"
-  s.version           = "0.1.2"
-  s.date              = "2010-03-14"
+  s.version           = I3::Version
+  s.date              = Date.today.to_s
   s.summary           = "inter-process communication with i3, the improved tiling window manager."
   s.homepage          = "http://github.com/badboy/i3-ipc"
   s.email             = "badboy@archlinux.us"
@@ -11,7 +12,7 @@ Gem::Specification.new do |s|
   s.files             = %w( README.markdown Rakefile LICENSE )
   s.files            += Dir.glob("lib/**/*")
   s.files            += Dir.glob("bin/**/*")
-  #s.files            += Dir.glob("man/**/*")
+  s.files            += Dir.glob("man/**/*")
   s.files            += Dir.glob("public/**/*")
 
   s.executables       = %w( i3-ipc )
