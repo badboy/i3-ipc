@@ -34,7 +34,7 @@ preamble
       standalone = ''
       standalone << PREAMBLE
       file_dir = File.expand_path(File.dirname(__FILE__))
-      exclude_files = %w(subscription.rb)
+      exclude_files = %w()
 
       exclude_file_list = exclude_files.map { |file|
         File.join(file_dir, file)

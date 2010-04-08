@@ -1,8 +1,32 @@
 require 'optparse'
+require 'pp'
 
 module I3
   module Runner
     extend self
+
+    def format_output(object, output)
+      if output == :pretty_print
+        pp object
+      elsif output == :json
+        require 'json'
+        puts object.to_json
+      else
+        p object
+      end
+    end
+
+    def subscribe(path, output)
+      trap('SIGINT') { EM.stop; puts }
+      I3::IPC.subscribe([:workspace], path) do |em, type, data|
+        case type
+        when I3::IPC::MESSAGE_REPLY_GET_WORKSPACES
+          format_output data, output
+        when I3::IPC::EVENT_WORKSPACE
+          em.send_data I3::IPC.format(I3::IPC::MESSAGE_TYPE_GET_WORKSPACES)
+        end
+      end
+    end
 
     def execute(*args)
       socket_file = '/tmp/i3-ipc.sock'
@@ -18,7 +42,7 @@ module I3
           socket_file = s
         end
 
-        t_desc = 'Set type, 0 = command, 1 = workspace list, defaults to 0'
+        t_desc = 'Set type, 0 = command, 1 = workspace list, 2 = subscribe to workspace event, 3 = output list, default: 0'
         opts.on('-tTYPE', '--type TYPE', Integer, t_desc) do |t|
           type = t
         end
@@ -49,7 +73,8 @@ module I3
 
       s = I3::IPC.new(socket_file)
 
-      if type == 0
+      case type
+      when 0
         if args.empty?
           abort "error: message type needs a message"
         end
@@ -57,17 +82,12 @@ module I3
         payload = args.shift
 
         puts s.command(payload) unless quiet
-      elsif type == 1
-        workspaces = s.get_workspaces
-        if output == :pretty_print
-          require 'pp'
-          pp workspaces
-        elsif output == :json
-          require 'json'
-          puts workspaces.to_json
-        else
-          p workspaces
-        end
+      when I3::IPC::MESSAGE_TYPE_GET_WORKSPACES
+        format_output s.get_workspaces, output
+      when I3::IPC::MESSAGE_REPLY_SUBSCRIBE
+        subscribe socket_file, output
+      when I3::IPC::MESSAGE_TYPE_GET_OUTPUTS
+        format_output s.get_outputs, output
       else
         abort "error: type #{type} not yet implemented"
       end
