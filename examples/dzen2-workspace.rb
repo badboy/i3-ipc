@@ -4,7 +4,7 @@
 # usage:
 #   ruby dzen2-workspace.rb | dzen2 -ta l -dock
 
-$LOAD_PATH.unshift File.expand_path("../lib")
+$LOAD_PATH.unshift File.expand_path("../lib", File.dirname(__FILE__))
 require 'i3-ipc'
 
 def print_workspace_list(data)
