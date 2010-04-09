@@ -5,3 +5,4 @@ rdoc
 pkg
 dist/*
 !dist/PKGBUILD
+!dist/*.install
