@@ -58,11 +58,11 @@ There are 3 arguments passed to the block:
 To send data to the socket, you need to use `em.send_data`.
 * `type` is the received message type.
 This could be one of
-  * MESSAGE_REPLY_COMMAND
-  * MESSAGE_REPLY_GET_WORKSPACES
-  * MESSAGE_REPLY_SUBSCRIBE
-  * MESSAGE_REPLY_GET_OUTPUTS
-  * EVENT_WORKSPACE
+  * MESSAGE\_REPLY\_COMMAND
+  * MESSAGE\_REPLY\_GET\_WORKSPACES
+  * MESSAGE\_REPLY\_SUBSCRIBE
+  * MESSAGE\_REPLY\_GET\_OUTPUTS
+  * EVENT\_WORKSPACE
 * `data` is the received data, already parsed.
 
 For example you can use the following code to get the actual focused screen:
