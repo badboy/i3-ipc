@@ -8,7 +8,7 @@ require 'i3-ipc/version'
 module I3
   class IPC
     MAGIC_STRING = "i3-ipc"
-    SOCKET_PATH = "/tmp/i3-ipc.sock"
+    SOCKET_PATH = File.expand_path("~/.i3/ipc.sock")
 
     MESSAGE_TYPE_COMMAND = 0
     MESSAGE_TYPE_GET_WORKSPACES = 1

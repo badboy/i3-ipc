@@ -29,7 +29,7 @@ module I3
     end
 
     def execute(*args)
-      socket_file = '/tmp/i3-ipc.sock'
+      socket_file = File.expand_path('~/.i3/ipc.sock')
       type = 0
       quiet = false
       output = :default
@@ -37,9 +37,9 @@ module I3
       opts = OptionParser.new do |opts|
         opts.banner = "Usage: i3-ipc [options] [message]"
 
-        s_desc = 'Set socket file, defaults to /tmp/i3-ipc.sock'
+        s_desc = 'Set socket file, defaults to ~/.i3/ipc.sock'
         opts.on('-s', '--socket', s_desc) do |s|
-          socket_file = s
+          socket_file = File.expand_path(s)
         end
 
         t_desc = 'Set type, 0 = command, 1 = workspace list, 2 = subscribe to workspace event, 3 = output list, default: 0'

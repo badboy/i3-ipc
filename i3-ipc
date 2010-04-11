@@ -146,7 +146,7 @@ module I3
     end
 
     def execute(*args)
-      socket_file = '/tmp/i3-ipc.sock'
+      socket_file = File.expand_path('~/.i3/ipc.sock')
       type = 0
       quiet = false
       output = :default
@@ -154,9 +154,9 @@ module I3
       opts = OptionParser.new do |opts|
         opts.banner = "Usage: i3-ipc [options] [message]"
 
-        s_desc = 'Set socket file, defaults to /tmp/i3-ipc.sock'
+        s_desc = 'Set socket file, defaults to ~/.i3/ipc.sock'
         opts.on('-s', '--socket', s_desc) do |s|
-          socket_file = s
+          socket_file = File.expand_path(s)
         end
 
         t_desc = 'Set type, 0 = command, 1 = workspace list, 2 = subscribe to workspace event, 3 = output list, default: 0'
@@ -217,7 +217,7 @@ require 'json'
 module I3
   class IPC
     MAGIC_STRING = "i3-ipc"
-    SOCKET_PATH = "/tmp/i3-ipc.sock"
+    SOCKET_PATH = File.expand_path("~/.i3/ipc.sock")
 
     MESSAGE_TYPE_COMMAND = 0
     MESSAGE_TYPE_GET_WORKSPACES = 1
@@ -352,13 +352,12 @@ Currently implemented message types of i3 are the following:
 .
 .TP
 \fB2 (SUBSCRIBE)\fR
-  Subscribes the connection to the \fBworkspace\fR event.
-  The program will print changed workspace list to STDOUT.
+  Subscribes your connection to the \fBworkspace\fR event.
 .
 .TP
 \fB3 (GET_OUTPUTS)\fR
-  Gets the output list.
-  The reply will be a JSON\-encoded list of workspaces.
+  Gets the current outputs.
+  The reply will be a JSON\-encoded list of outputs.
 .
 .SH "OPTIONS"
 \fBi3\-ipc\fR's default mode of operation is to send the command (type 0) specified on the command line.
@@ -372,7 +371,8 @@ Set the socket file, defaults to /tmp/i3\-ipc.sock
 .
 .TP
 \fB\-t\fR, \fB\-\-type\fR
-Set the type. Passing a type of 0 is the default and will send the specified command, type 1 gets the current workspace list, type 2 will subscribe and print new workspace list on change, type 3 will get the output list.
+Set the type. Passing a type of 0 is the default and will send the specified command, type 1 gets the current workspace list,
+type 2 subscribes to the workspace stream, type 3 gets the current output list.
 .
 .TP
 \fB\-p\fR, \fB\-\-pretty\-print\fR
@@ -406,8 +406,8 @@ Display this man page.
 .nf
 
 $ i3\-ipc \-t 1
-$ i3\-ipc \-t 1 \-p
-$ i3\-ipc \-t 1 \-j
+$ i3\-ipc \-t 2 \-p
+$ i3\-ipc \-t 3 \-j
 $ i3\-ipc "exec xterm"
 .
 .fi
