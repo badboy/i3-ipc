@@ -4,15 +4,16 @@ require 'pp'
 module I3
   module Runner
     extend self
+    OUTPUT = $stdout
 
     def format_output(object, output)
       if output == :pretty_print
-        pp object
+        PP.pp(object, OUTPUT)
       elsif output == :json
         require 'json'
-        puts object.to_json
+        OUTPUT.puts object.to_json
       else
-        p object
+        OUTPUT.puts object.inspect
       end
     end
 
@@ -38,7 +39,7 @@ module I3
         opts.banner = "Usage: i3-ipc [options] [message]"
 
         s_desc = 'Set socket file, defaults to ~/.i3/ipc.sock'
-        opts.on('-s', '--socket', s_desc) do |s|
+        opts.on('-s SOCKET', '--socket SOCKET', s_desc) do |s|
           socket_file = File.expand_path(s)
         end
 
@@ -64,7 +65,7 @@ module I3
         end
 
         opts.on('-h', '--help', 'Display this screen') do
-          puts opts
+          OUTPUT.puts opts
           exit
         end
       end
@@ -80,8 +81,7 @@ module I3
         end
 
         payload = args.shift
-
-        puts s.command(payload) unless quiet
+        OUTPUT.puts s.command(payload).inspect unless quiet
       when I3::IPC::MESSAGE_TYPE_GET_WORKSPACES
         format_output s.get_workspaces, output
       when I3::IPC::MESSAGE_REPLY_SUBSCRIBE
