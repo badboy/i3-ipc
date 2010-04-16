@@ -13,7 +13,6 @@ Gem::Specification.new do |s|
   s.files            += Dir.glob("lib/**/*")
   s.files            += Dir.glob("bin/**/*")
   s.files            += Dir.glob("man/**/*")
-  s.files            += Dir.glob("public/**/*")
 
   s.executables       = %w( i3-ipc )
   s.description       = <<desc
@@ -21,6 +20,6 @@ Gem::Specification.new do |s|
 desc
 
   s.add_dependency "eventmachine", [">= 0.12.10"]
-  s.add_dependency "shoulda", [">= 2.10.3"]
-  s.add_dependency "mocha", [">= 0.9.8"]
+  s.add_development_dependency "shoulda", [">= 2.10.3"]
+  s.add_development_dependency "mocha", [">= 0.9.8"]
 end
