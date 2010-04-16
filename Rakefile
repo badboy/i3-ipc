@@ -6,7 +6,7 @@ begin
   task :gem => :package
 
   desc "Push a new version to Gemcutter and publish docs."
-  task :publish => :gemcutter do
+  task :publish => [:test, :gemcutter] do
     require File.dirname(__FILE__) + '/lib/i3-ipc/version'
 
     sh "git tag v#{I3::Version}"
