@@ -43,7 +43,7 @@ module I3
           socket_file = File.expand_path(s)
         end
 
-        t_desc = 'Set type, 0 = command, 1 = workspace list, 2 = subscribe to workspace event, 3 = output list, default: 0'
+        t_desc = 'Set type, 0 = command, 1 = workspace list, 2 = subscribe to workspace event, 3 = output list, 4 = tree list, default: 0'
         opts.on('-tTYPE', '--type TYPE', Integer, t_desc) do |t|
           type = t
         end
