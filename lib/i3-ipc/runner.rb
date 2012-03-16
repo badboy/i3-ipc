@@ -88,6 +88,8 @@ module I3
         subscribe socket_file, output
       when I3::IPC::MESSAGE_TYPE_GET_OUTPUTS
         format_output s.get_outputs, output
+      when I3::IPC::MESSAGE_TYPE_GET_TREE
+        format_output s.get_tree, output
       else
         abort "error: type #{type} not yet implemented"
       end
