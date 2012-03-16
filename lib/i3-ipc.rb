@@ -45,21 +45,21 @@ module I3
       Subscription.subscribe(list, socket_path, &blk)
     end
 
-    # send a command to i3
+    # Send a command to i3.
     #
-    # the payload is a command for i3
+    # The payload is a command for i3
     # (like the commands you can bind to keys in the configuration file)
     # and will be executed directly after receiving it.
     #
-    # returns { "success" => true } for now.
-    # i3 does send this reply without checks
+    # Returns { "success" => true } for now.
+    # i3 does send this reply without checks.
     def command(payload)
       write format(MESSAGE_TYPE_COMMAND, payload)
       handle_response MESSAGE_TYPE_COMMAND
     end
 
-    # gets the current workspaces.
-    # the reply will be the list of workspaces
+    # Gets the current workspaces.
+    # The reply will be the list of workspaces
     # (see the reply section of i3 docu)
     def get_workspaces
       write format(MESSAGE_TYPE_GET_WORKSPACES)
@@ -67,16 +67,17 @@ module I3
     end
 
     # Gets the current outputs.
-    # The reply will be a JSON-encoded list
-    # of outputs
+    # The reply will be a JSON-encoded list of outputs
     # (see the reply section of i3 docu).
     def get_outputs
       write format(MESSAGE_TYPE_GET_OUTPUTS)
       handle_response MESSAGE_TYPE_GET_OUTPUTS
     end
 
-    # gets current visible windows in form of a tree
-    # JSON-encoded, just like everything else
+    # Gets the layout tree.
+    # i3 uses a tree as data structure which includes every container.
+    # The reply will be the JSON-encoded tree
+    # (see the reply section of i3 docu)
     def get_tree
       write format(MESSAGE_TYPE_GET_TREE)
       handle_response MESSAGE_TYPE_GET_TREE
@@ -102,12 +103,12 @@ module I3
     # Reads the reply from the socket
     # and parses the returned json into a ruby object.
     #
-    # throws WrongMagicCode when magic word is wrong
-    # throws WrongType if returned type does not match expected
+    # Throws WrongMagicCode when magic word is wrong.
+    # Throws WrongType if returned type does not match expected.
     #
-    # this is a bit duplicated code
-    # but I don't know a way to read the full send reply
-    # without knowing its length
+    # This is a bit duplicated code
+    #  but I don't know a way to read the full send reply
+    #  without knowing its length
     def handle_response(type)
       # reads 14 bytes
       # length of "i3-ipc" + 4 bytes length + 4 bytes type
@@ -121,8 +122,8 @@ module I3
       ::JSON.parse(answer)
     end
 
-    # format the message
-    # a typical message looks like
+    # Format the message.
+    # A typical message looks like
     #   "i3-ipc" <message length> <message type> <payload>
     def self.format(type, payload=nil)
       size = payload ? payload.to_s.bytes.count : 0
@@ -135,9 +136,9 @@ module I3
       self.class.format(type, payload)
     end
 
-    # parse a full ipc response
-    # similar to handle_response,
-    # but parses full reply as received by EventMachine
+    # Parse a full ipc response.
+    # Similar to handle_response,
+    # but parses full reply as received by EventMachine.
     #
     # returns an Array containing the
     # reply type and the parsed data
@@ -156,8 +157,8 @@ module I3
       self.class.parse_response(response)
     end
 
-    # writes message to the socket
-    # if socket is not connected, it connects first
+    # Writes message to the socket.
+    # If socket is not connected, it connects first.
     def write(msg)
       connect if @socket.nil? || closed?
       @last_write_length = @socket.write msg
@@ -167,20 +168,19 @@ module I3
       @socket.read(len)
     end
 
-    # connects to the given socket
+    # Connects to the given socket.
     def connect
       @socket = UNIXSocket.new(@socket_path)
     end
 
-    # closes the socket connection
+    # Closes the socket connection.
     def close
       @socket.close
     end
 
-    # alias for @socket.closed? for easy access
+    # Alias for @socket.closed? for easy access
     def closed?
       @socket.closed?
     end
   end
 end
-
