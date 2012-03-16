@@ -71,6 +71,8 @@ module I3
       handle_response MESSAGE_TYPE_GET_OUTPUTS
     end
 
+    # gets current visible windows in form of a tree
+    # JSON-encoded, just like everything else
     def get_tree
       write format(MESSAGE_TYPE_GET_TREE)
       handle_response MESSAGE_TYPE_GET_TREE
