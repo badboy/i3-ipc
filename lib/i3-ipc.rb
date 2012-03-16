@@ -15,12 +15,16 @@ module I3
     MESSAGE_TYPE_SUBSCRIBE = 2
     MESSAGE_TYPE_GET_OUTPUTS = 3
     MESSAGE_TYPE_GET_TREE = 4
+    MESSAGE_TYPE_GET_MARKS = 5
+    MESSAGE_TYPE_GET_BAR_CONFIG = 6
 
     MESSAGE_REPLY_COMMAND = 0
     MESSAGE_REPLY_GET_WORKSPACES = 1
     MESSAGE_REPLY_SUBSCRIBE = 2
     MESSAGE_REPLY_GET_OUTPUTS = 3
     MESSAGE_REPLY_GET_TREE = 4
+    MESSAGE_REPLY_GET_MARKS = 5
+    MESSAGE_REPLY_GET_BAR_CONFIG = 6
 
     EVENT_MASK = (1 << 31)
     EVENT_WORKSPACE = (EVENT_MASK | 0)
@@ -78,8 +82,25 @@ module I3
       handle_response MESSAGE_TYPE_GET_TREE
     end
 
-    # reads the reply from the socket
-    # and parse the returned json into a ruby object
+    # Gets a list of marks (identifiers for containers to easily jump
+    # to them later).
+    # The reply will be a JSON-encoded list of window marks.
+    # (see the reply section of i3 docu)
+    def get_marks
+      write format(MESSAGE_TYPE_GET_MARKS)
+      handle_response MESSAGE_TYPE_GET_MARKS
+    end
+
+    # Gets the configuration (as JSON map) of the workspace bar with
+    # the given ID.
+    # If no ID is provided, an array with all configured bar IDs is returned instead.
+    def get_bar_config id=nil
+      write format(MESSAGE_TYPE_GET_BAR_CONFIG, id)
+      handle_response MESSAGE_TYPE_GET_BAR_CONFIG
+    end
+
+    # Reads the reply from the socket
+    # and parses the returned json into a ruby object.
     #
     # throws WrongMagicCode when magic word is wrong
     # throws WrongType if returned type does not match expected

@@ -90,6 +90,11 @@ module I3
         format_output s.get_outputs, output
       when I3::IPC::MESSAGE_TYPE_GET_TREE
         format_output s.get_tree, output
+      when I3::IPC::MESSAGE_TYPE_GET_MARKS
+        format_output s.get_marks, output
+      when I3::IPC::MESSAGE_TYPE_GET_BAR_CONFIG
+        payload = args.shift
+        format_output s.get_bar_config(payload), output
       else
         abort "error: type #{type} not yet implemented"
       end
