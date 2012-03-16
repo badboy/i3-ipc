@@ -14,11 +14,13 @@ module I3
     MESSAGE_TYPE_GET_WORKSPACES = 1
     MESSAGE_TYPE_SUBSCRIBE = 2
     MESSAGE_TYPE_GET_OUTPUTS = 3
+    MESSAGE_TYPE_GET_TREE = 4
 
     MESSAGE_REPLY_COMMAND = 0
     MESSAGE_REPLY_GET_WORKSPACES = 1
     MESSAGE_REPLY_SUBSCRIBE = 2
     MESSAGE_REPLY_GET_OUTPUTS = 3
+    MESSAGE_REPLY_GET_TREE = 4
 
     EVENT_MASK = (1 << 31)
     EVENT_WORKSPACE = (EVENT_MASK | 0)
@@ -67,6 +69,11 @@ module I3
     def get_outputs
       write format(MESSAGE_TYPE_GET_OUTPUTS)
       handle_response MESSAGE_TYPE_GET_OUTPUTS
+    end
+
+    def get_tree
+      write format(MESSAGE_TYPE_GET_TREE)
+      handle_response MESSAGE_TYPE_GET_TREE
     end
 
     # reads the reply from the socket
