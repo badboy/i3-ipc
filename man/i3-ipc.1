@@ -1,67 +1,61 @@
-.\" generated with Ronn/v0.5
-.\" http://github.com/rtomayko/ronn/
+.\" generated with Ronn/v0.7.3
+.\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "I3\-IPC" "1" "April 2010" "badboy" "i3-ipc Manual"
+.TH "I3\-IPC" "1" "March 2012" "badboy" "i3-ipc Manual"
 .
 .SH "NAME"
-\fBi3\-ipc\fR \-\- inter\-process communication with i3
+\fBi3\-ipc\fR \- inter\-process communication with i3
 .
 .SH "SYNOPSIS"
 \fBi3\-ipc\fR [\fB\-s\fR] [\fB\-t type\fR] [\fB\-p\fR] [\fB\-j\fR] [\fB\-q\fR] [\fBmessage\fR]
 .
 .SH "DESCRIPTION"
-\fBi3\-ipc\fR can be used to communicate with i3, the improved tiling window manager, through the provided ipc socket. Useful for scripting the window manager.
+\fBi3\-ipc\fR can be used to communicate with i3, the improved tiling window manager, through the provided ipc socket\. Useful for scripting the window manager\.
 .
 .P
 Currently implemented message types of i3 are the following:
 .
 .TP
 \fB0 (COMMAND)\fR
-  The payload of the message is a command for i3
-  (like the commands you can bind to keys in the configuration file)
-  The command will be executed directly after receiving it.
-  The reply will be always {"succes":true} for now.
+The payload of the message is a command for i3 (like the commands you can bind to keys in the configuration file) The command will be executed directly after receiving it\. The reply will be always {"succes":true} for now\.
 .
 .TP
 \fB1 (GET_WORKSPACES)\fR
-  Gets the current workspaces.
-  The reply will be a JSON\-encoded list of workspaces.
+Gets the current workspaces\. The reply will be a JSON\-encoded list of workspaces\.
 .
 .TP
 \fB2 (SUBSCRIBE)\fR
-  Subscribes your connection to the \fBworkspace\fR event.
+Subscribes your connection to the \fBworkspace\fR event\.
 .
 .TP
 \fB3 (GET_OUTPUTS)\fR
-  Gets the current outputs.
-  The reply will be a JSON\-encoded list of outputs.
+Gets the current outputs\. The reply will be a JSON\-encoded list of outputs\.
 .
 .SH "OPTIONS"
-\fBi3\-ipc\fR's default mode of operation is to send the command (type 0) specified on the command line.
+\fBi3\-ipc\fR\'s default mode of operation is to send the command (type 0) specified on the command line\.
 .
 .P
 These options can be used to change this behavior:
 .
 .TP
 \fB\-s\fR, \fB\-\-socket\fR
-Set the socket file, defaults to ~/.i3/ipc.sock
+Set the socket file, defaults to ~/\.i3/ipc\.sock
 .
 .TP
 \fB\-t\fR, \fB\-\-type\fR
-Set the type. Passing a type of 0 is the default and will send the specified command, type 1 gets the current workspace list,
-type 2 subscribes to the workspace stream, type 3 gets the current output list.
+Set the type\. Passing a type of 0 is the default and will send the specified command, type 1 gets the current workspace list, type 2 subscribes to the workspace stream, type 3 gets the current output list\.
 .
 .TP
 \fB\-p\fR, \fB\-\-pretty\-print\fR
-This will pretty print the received reply. Useful for the workspace list.
+This will pretty print the received reply\. Useful for the workspace list\.
 .
 .TP
 \fB\-j\fR, \fB\-\-json\fR
-This will print the received reply as raw json\-encoded data. Useful to pass to another script.
+This will print the received reply as raw json\-encoded data\. Useful to pass to another script\.
 .
 .TP
 \fB\-q\fR, \fB\-\-quiet\fR
-Turn off the output. Useful for command mode.
+Turn off the output\. Useful for command mode\.
 .
 .TP
 \fBmessage\fR
@@ -72,11 +66,11 @@ You may additionally ask for help:
 .
 .TP
 \fB\-h\fR, \fB\-\-help\fR
-Print help.
+Print help\.
 .
 .TP
 \fB\-m\fR, \fB\-\-man\fR
-Display this man page.
+Display this man page\.
 .
 .SH "EXAMPLES"
 .
@@ -90,10 +84,10 @@ $ i3\-ipc "exec xterm"
 .fi
 .
 .SH "BUGS"
-\fIhttp://github.com/badboy/i3\-ipc/issues\fR
+\fIhttp://github\.com/badboy/i3\-ipc/issues\fR
 .
 .SH "AUTHOR"
-Jan\-Erik Rediger:: badboy@archlinux.us
+Jan\-Erik Rediger:: badboy@archlinux\.us
 .
 .SH "SEE ALSO"
-i3(1), i3\-msg(1), \fIhttp://i3.zekjur.net/\fR, \fIhttp://github.com/badboy/i3\-ipc\fR
+i3(1), i3\-msg(1), \fIhttp://i3\.zekjur\.net/\fR, \fIhttp://github\.com/badboy/i3\-ipc\fR
