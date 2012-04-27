@@ -1,23 +1,24 @@
-begin
-  require 'mg'
-  MG.new("i3-ipc.gemspec")
+#begin
+  #require 'mg'
+  #MG.new("i3-ipc.gemspec")
 
-  desc "Build a gem."
-  task :gem => :package
+  #desc "Build a gem."
+  #task :gem => :package
 
-  desc "Push a new version to Gemcutter and publish docs."
-  task :publish => [:test, :gemcutter] do
-    require File.dirname(__FILE__) + '/lib/i3-ipc/version'
+  #desc "Push a new version to Gemcutter and publish docs."
+  #task :publish => [:test, :gemcutter] do
+    #require_relative 'lib/i3-ipc/version'
 
-    sh "git tag v#{I3::Version}"
-    sh "git push origin master --tags"
-    sh "git clean -fd"
-    exec "rake pages"
-  end
-rescue LoadError
-  warn "mg not available."
-  warn "Install it with: gem i mg"
-end
+    #sh "git tag v#{I3::Version}"
+    #sh "git push origin master --tags"
+    #sh "git clean -fd"
+    #exec "rake pages"
+  #end
+#rescue LoadError => e
+  #raise unless e.message =~ /-- mg$/
+  #warn "mg not available."
+  #warn "Install it with: gem i mg"
+#end
 
 desc "Build standalone script"
 task :build => [ "build:standalone", "build:man" ]
@@ -27,6 +28,11 @@ task :man => "build:man" do
   exec "man man/i3-ipc.1"
 end
 
+file "i3-ipc" => FileList.new("lib/i3-ipc.rb", "lib/i3-ipc/*.rb", "man/i3-ipc.1") do |task|
+  require_relative 'lib/i3-ipc/standalone'
+  I3::Standalone.save(task.name)
+end
+
 namespace :build do
   desc "Build i3-ipc manual"
   task :man do
@@ -34,15 +40,7 @@ namespace :build do
   end
 
   desc "Build standalone script"
-  task :standalone => :load_i3_ipc do
-    require 'i3-ipc/standalone'
-    I3::Standalone.save('i3-ipc')
-  end
-end
-
-task :load_i3_ipc do
-  $LOAD_PATH.unshift 'lib'
-  require 'i3-ipc'
+  task :standalone => "i3-ipc"
 end
 
 Rake::TaskManager.class_eval do
