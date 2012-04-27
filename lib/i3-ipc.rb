@@ -9,21 +9,48 @@ module I3
   class IPC
     MAGIC_STRING = "i3-ipc"
 
-    MESSAGE_TYPE_COMMAND = 0
-    MESSAGE_TYPE_GET_WORKSPACES = 1
-    MESSAGE_TYPE_SUBSCRIBE = 2
-    MESSAGE_TYPE_GET_OUTPUTS = 3
-    MESSAGE_TYPE_GET_TREE = 4
-    MESSAGE_TYPE_GET_MARKS = 5
-    MESSAGE_TYPE_GET_BAR_CONFIG = 6
+    COMMANDS = [
+      # Send a command to i3.
+      #
+      # The payload is a command for i3
+      # (like the commands you can bind to keys in the configuration file)
+      # and will be executed directly after receiving it.
+      #
+      # Returns { "success" => true } for now.
+      # i3 does send this reply without checks.
+      [0, :command,        :required],
 
-    MESSAGE_REPLY_COMMAND = 0
-    MESSAGE_REPLY_GET_WORKSPACES = 1
-    MESSAGE_REPLY_SUBSCRIBE = 2
-    MESSAGE_REPLY_GET_OUTPUTS = 3
-    MESSAGE_REPLY_GET_TREE = 4
-    MESSAGE_REPLY_GET_MARKS = 5
-    MESSAGE_REPLY_GET_BAR_CONFIG = 6
+      # Gets the current workspaces.
+      # The reply will be the list of workspaces
+      # (see the reply section of i3 docu)
+      [1, :get_workspaces, :none],
+
+      # Gets the current outputs.
+      # The reply will be a JSON-encoded list of outputs
+      # (see the reply section of i3 docu).
+      [3, :get_outputs,    :none],
+
+      # Gets the layout tree.
+      # i3 uses a tree as data structure which includes every container.
+      # The reply will be the JSON-encoded tree
+      # (see the reply section of i3 docu)
+      [4, :get_tree,       :none],
+
+      # Gets a list of marks (identifiers for containers to easily jump
+      # to them later).
+      # The reply will be a JSON-encoded list of window marks.
+      # (see the reply section of i3 docu)
+      [5, :get_marks,      :none],
+
+      # Gets the configuration (as JSON map) of the workspace bar with
+      # the given ID.
+      # If no ID is provided, an array with all configured bar IDs is returned instead.
+      [6, :get_bar_config, :optional],
+    ]
+    # Needed because it is used in runner.rb
+    MESSAGE_TYPE_GET_WORKSPACES = 1
+    # Needed because subscribe is handled in submodule.
+    MESSAGE_TYPE_SUBSCRIBE = 2
 
     EVENT_MASK = (1 << 31)
     EVENT_WORKSPACE = (EVENT_MASK | 0)
@@ -45,63 +72,8 @@ module I3
     end
 
     # shortcut
-    def self.subscribe(list, socket_path=SOCKET_PATH, &blk)
-      Subscription.subscribe(list, socket_path, &blk)
-    end
-
-    # Send a command to i3.
-    #
-    # The payload is a command for i3
-    # (like the commands you can bind to keys in the configuration file)
-    # and will be executed directly after receiving it.
-    #
-    # Returns { "success" => true } for now.
-    # i3 does send this reply without checks.
-    def command(payload)
-      write format(MESSAGE_TYPE_COMMAND, payload)
-      handle_response MESSAGE_TYPE_COMMAND
-    end
-
-    # Gets the current workspaces.
-    # The reply will be the list of workspaces
-    # (see the reply section of i3 docu)
-    def get_workspaces
-      write format(MESSAGE_TYPE_GET_WORKSPACES)
-      handle_response MESSAGE_TYPE_GET_WORKSPACES
-    end
-
-    # Gets the current outputs.
-    # The reply will be a JSON-encoded list of outputs
-    # (see the reply section of i3 docu).
-    def get_outputs
-      write format(MESSAGE_TYPE_GET_OUTPUTS)
-      handle_response MESSAGE_TYPE_GET_OUTPUTS
-    end
-
-    # Gets the layout tree.
-    # i3 uses a tree as data structure which includes every container.
-    # The reply will be the JSON-encoded tree
-    # (see the reply section of i3 docu)
-    def get_tree
-      write format(MESSAGE_TYPE_GET_TREE)
-      handle_response MESSAGE_TYPE_GET_TREE
-    end
-
-    # Gets a list of marks (identifiers for containers to easily jump
-    # to them later).
-    # The reply will be a JSON-encoded list of window marks.
-    # (see the reply section of i3 docu)
-    def get_marks
-      write format(MESSAGE_TYPE_GET_MARKS)
-      handle_response MESSAGE_TYPE_GET_MARKS
-    end
-
-    # Gets the configuration (as JSON map) of the workspace bar with
-    # the given ID.
-    # If no ID is provided, an array with all configured bar IDs is returned instead.
-    def get_bar_config id=nil
-      write format(MESSAGE_TYPE_GET_BAR_CONFIG, id)
-      handle_response MESSAGE_TYPE_GET_BAR_CONFIG
+    def self.subscribe(list, socket_path=nil, &blk)
+      Subscription.subscribe(list, socket_path || self.socket_path, &blk)
     end
 
     # Reads the reply from the socket

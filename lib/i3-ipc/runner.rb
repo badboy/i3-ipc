@@ -21,7 +21,7 @@ module I3
       trap('SIGINT') { EM.stop; puts }
       I3::IPC.subscribe([:workspace], path) do |em, type, data|
         case type
-        when I3::IPC::MESSAGE_REPLY_GET_WORKSPACES
+        when I3::IPC::MESSAGE_TYPE_GET_WORKSPACES
           format_output data, output
         when I3::IPC::EVENT_WORKSPACE
           em.send_data I3::IPC.format(I3::IPC::MESSAGE_TYPE_GET_WORKSPACES)
@@ -75,29 +75,25 @@ module I3
       socket_file ||= I3::IPC.socket_path
       i3 = I3::IPC.new(socket_file)
 
-      case type
-      when 0
-        if args.empty?
-          abort "error: message type needs a message"
-        end
-
-        payload = args.shift
-        OUTPUT.puts s.command(payload).inspect unless quiet
-      when I3::IPC::MESSAGE_TYPE_GET_WORKSPACES
-        format_output s.get_workspaces, output
-      when I3::IPC::MESSAGE_REPLY_SUBSCRIBE
+      if type == I3::IPC::MESSAGE_TYPE_SUBSCRIBE
         subscribe socket_file, output
-      when I3::IPC::MESSAGE_TYPE_GET_OUTPUTS
-        format_output s.get_outputs, output
-      when I3::IPC::MESSAGE_TYPE_GET_TREE
-        format_output s.get_tree, output
-      when I3::IPC::MESSAGE_TYPE_GET_MARKS
-        format_output s.get_marks, output
-      when I3::IPC::MESSAGE_TYPE_GET_BAR_CONFIG
-        payload = args.shift
-        format_output s.get_bar_config(payload), output
       else
-        abort "error: type #{type} not yet implemented"
+        arg = I3::IPC::COMMANDS.find {|t| t.first == type}
+        if arg
+          if arg.last == :none
+            format_output i3.send(arg[1]), output
+          elsif arg.last == :required
+            payload = args.shift
+            if payload.nil?
+              abort "error: payload needed."
+            else
+              format_output i3.send(arg[1], payload), output
+            end
+          elsif arg.last == :optional
+            payload = args.shift
+            format_output i3.send(arg[1], payload), output
+          end
+        end
       end
     end
   end
