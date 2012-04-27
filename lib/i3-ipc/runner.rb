@@ -30,7 +30,7 @@ module I3
     end
 
     def execute(*args)
-      socket_file = File.expand_path('~/.i3/ipc.sock')
+      socket_file = nil
       type = 0
       quiet = false
       output = :default
@@ -38,7 +38,7 @@ module I3
       opts = OptionParser.new do |opts|
         opts.banner = "Usage: i3-ipc [options] [message]"
 
-        s_desc = 'Set socket file, defaults to ~/.i3/ipc.sock'
+        s_desc = 'Set socket file, defaults to `i3 --get-socketpath` output'
         opts.on('-s SOCKET', '--socket SOCKET', s_desc) do |s|
           socket_file = File.expand_path(s)
         end
@@ -72,7 +72,8 @@ module I3
 
       opts.parse!(args)
 
-      s = I3::IPC.new(socket_file)
+      socket_file ||= I3::IPC.socket_path
+      i3 = I3::IPC.new(socket_file)
 
       case type
       when 0

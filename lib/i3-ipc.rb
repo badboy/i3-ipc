@@ -8,7 +8,6 @@ require_relative 'i3-ipc/version'
 module I3
   class IPC
     MAGIC_STRING = "i3-ipc"
-    SOCKET_PATH = File.expand_path("~/.i3/ipc.sock")
 
     MESSAGE_TYPE_COMMAND = 0
     MESSAGE_TYPE_GET_WORKSPACES = 1
@@ -32,11 +31,16 @@ module I3
     class WrongMagicCode < RuntimeError; end # :nodoc:
     class WrongType < RuntimeError; end # :nodoc:
 
+    # Get socket path via i3 itself.
+    def self.socket_path
+      @@socket_path ||= `i3 --get-socketpath`.chomp
+    end
+
     # connects to the given i3 ipc interface
     # @param socket_path String the path to i3's socket
     # @param force_connect Boolean connects to the socket if true
-    def initialize(socket_path=SOCKET_PATH, force_connect=false)
-      @socket_path = socket_path
+    def initialize(socket=nil, force_connect=false)
+      @@socket_path = socket if socket
       connect if connect
     end
 
@@ -170,7 +174,7 @@ module I3
 
     # Connects to the given socket.
     def connect
-      @socket = UNIXSocket.new(@socket_path)
+      @socket = UNIXSocket.new(self.class.socket_path)
     end
 
     # Closes the socket connection.
