@@ -1,4 +1,4 @@
-require 'lib/i3-ipc/version'
+require_relative 'lib/i3-ipc/version'
 Gem::Specification.new do |s|
   s.name              = "i3-ipc"
   s.version           = I3::Version
