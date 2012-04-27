@@ -46,7 +46,7 @@ preamble
 
         File.readlines(file).each do |line|
           next if line =~ /^\s*#/
-          next if line =~ /^require 'i3-ipc/
+          next if line =~ /^require(_relative)? 'i3-ipc/
           standalone << line
         end
       end

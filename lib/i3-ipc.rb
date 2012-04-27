@@ -1,9 +1,9 @@
 require 'socket'
 require 'json'
-require 'i3-ipc/runner'
-require 'i3-ipc/subscription'
-require 'i3-ipc/manpage'
-require 'i3-ipc/version'
+require_relative 'i3-ipc/runner'
+require_relative 'i3-ipc/subscription'
+require_relative 'i3-ipc/manpage'
+require_relative 'i3-ipc/version'
 
 module I3
   class IPC
