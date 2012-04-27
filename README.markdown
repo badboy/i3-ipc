@@ -58,10 +58,10 @@ There are 3 arguments passed to the block:
 To send data to the socket, you need to use `em.send_data`.
 * `type` is the received message type.
 This could be one of
-  * MESSAGE\_REPLY\_COMMAND
-  * MESSAGE\_REPLY\_GET\_WORKSPACES
-  * MESSAGE\_REPLY\_SUBSCRIBE
-  * MESSAGE\_REPLY\_GET\_OUTPUTS
+  * MESSAGE\_TYPE\_COMMAND
+  * MESSAGE\_TYPE\_GET\_WORKSPACES
+  * MESSAGE\_TYPE\_SUBSCRIBE
+  * MESSAGE\_TYPE\_GET\_OUTPUTS
   * EVENT\_WORKSPACE
 * `data` is the received data, already parsed.
 
