@@ -47,13 +47,35 @@ module I3
       # If no ID is provided, an array with all configured bar IDs is returned instead.
       [6, :get_bar_config, :optional],
     ]
-    # Needed because it is used in runner.rb
-    MESSAGE_TYPE_GET_WORKSPACES = 1
     # Needed because subscribe is handled in submodule.
     MESSAGE_TYPE_SUBSCRIBE = 2
 
     EVENT_MASK = (1 << 31)
     EVENT_WORKSPACE = (EVENT_MASK | 0)
+
+    def self.message_type_subscribe
+      MESSAGE_TYPE_SUBSCRIBE
+    end
+
+    meta = class<<self; self; end
+    COMMANDS.each do |(id, cmd, arg)|
+      meta.instance_eval {
+        define_method "message_type_#{cmd.downcase}" do
+          id
+        end
+      }
+      if arg == :none
+        define_method cmd do
+          write format(id)
+          handle_response id
+        end
+      elsif arg == :optional || arg == :required
+        define_method cmd do |arg|
+          write format(id, arg)
+          handle_response id
+        end
+      end
+    end
 
     class WrongMagicCode < RuntimeError; end # :nodoc:
     class WrongType < RuntimeError; end # :nodoc:
