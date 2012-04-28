@@ -6,7 +6,8 @@ module I3
     extend self
     OUTPUT = $stdout
 
-    def format_output(object, output)
+    def format_output(object, output, quiet)
+      return if quiet
       if output == :pretty_print
         PP.pp(object, OUTPUT)
       elsif output == :json
@@ -75,23 +76,23 @@ module I3
       socket_file ||= I3::IPC.socket_path
       i3 = I3::IPC.new(socket_file)
 
-      if type == I3::IPC::MESSAGE_TYPE_SUBSCRIBE
+      if type == I3::IPC.message_type_subscribe
         subscribe socket_file, output
       else
         arg = I3::IPC::COMMANDS.find {|t| t.first == type}
         if arg
           if arg.last == :none
-            format_output i3.send(arg[1]), output
+            format_output i3.send(arg[1]), output, quiet
           elsif arg.last == :required
             payload = args.shift
             if payload.nil?
               abort "error: payload needed."
             else
-              format_output i3.send(arg[1], payload), output
+              format_output i3.send(arg[1], payload), output, quiet
             end
           elsif arg.last == :optional
             payload = args.shift
-            format_output i3.send(arg[1], payload), output
+            format_output i3.send(arg[1], payload), output, quiet
           end
         end
       end
