@@ -22,10 +22,10 @@ module I3
       trap('SIGINT') { EM.stop; puts }
       I3::IPC.subscribe([:workspace], path) do |em, type, data|
         case type
-        when I3::IPC::MESSAGE_TYPE_GET_WORKSPACES
-          format_output data, output
+        when I3::IPC.message_type_get_workspaces
+          format_output data, output, false
         when I3::IPC::EVENT_WORKSPACE
-          em.send_data I3::IPC.format(I3::IPC::MESSAGE_TYPE_GET_WORKSPACES)
+          em.send_data I3::IPC.format(I3::IPC.message_type_get_workspaces)
         end
       end
     end
@@ -74,11 +74,11 @@ module I3
       opts.parse!(args)
 
       socket_file ||= I3::IPC.socket_path
-      i3 = I3::IPC.new(socket_file)
 
       if type == I3::IPC.message_type_subscribe
         subscribe socket_file, output
       else
+        i3 = I3::IPC.new(socket_file)
         arg = I3::IPC::COMMANDS.find {|t| t.first == type}
         if arg
           if arg.last == :none

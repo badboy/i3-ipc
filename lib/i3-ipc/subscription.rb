@@ -5,7 +5,7 @@ module I3
     extend self
 
     class SubscriptionConnection < EM::Connection
-      def self.connect(subscription_list, socket_path=I3::IPC::SOCKET_PATH, &blk)
+      def self.connect(subscription_list, socket_path=nil, &blk)
         new_klass = Class.new(self)
         new_klass.send(:define_method, :initialize) do
           @subscription_list = subscription_list
@@ -16,7 +16,7 @@ module I3
 
       # send subscription to i3
       def post_init
-        send_data I3::IPC.format(I3::IPC::MESSAGE_TYPE_SUBSCRIBE,
+        send_data I3::IPC.format(I3::IPC.message_type_subscribe,
                                  @subscription_list.to_json)
       end
 
@@ -26,7 +26,8 @@ module I3
       end
     end
 
-    def subscribe(subscription_list, socket_path=I3::IPC::SOCKET_PATH, &blk)
+    def subscribe(subscription_list, socket_path=nil, &blk)
+      socket_path ||= I3::IPC.socket_path
       EM.run do
         SubscriptionConnection.connect(subscription_list,
                                        socket_path, &blk)
