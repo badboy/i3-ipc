@@ -3,18 +3,18 @@ require 'helper'
 class TestI3IPC < Test::Unit::TestCase
   context "The I3::IPC class" do
     should "correctly format a command message" do
-      assert_equal "i3-ipc\1\0\0\0\0\0\0\0l",
-        I3::IPC.format(I3::IPC::MESSAGE_TYPE_COMMAND, "l")
+      assert_equal "i3-ipc\v\0\0\0\0\0\0\0workspace 1",
+        I3::IPC.format(I3::IPC.message_type_command, "workspace 1")
     end
 
     should "correctly format a get_workspaces message" do
       assert_equal "i3-ipc\0\0\0\0\1\0\0\0",
-        I3::IPC.format(I3::IPC::MESSAGE_TYPE_GET_WORKSPACES)
+        I3::IPC.format(I3::IPC.message_type_get_workspaces)
     end
 
     should "correctly format a subscribe message" do
       assert_equal "i3-ipc\0\0\0\0\2\0\0\0",
-        I3::IPC.format(I3::IPC::MESSAGE_TYPE_SUBSCRIBE)
+        I3::IPC.format(I3::IPC.message_type_subscribe)
     end
 
     should "parse valid input" do
@@ -50,7 +50,7 @@ class TestI3IPC < Test::Unit::TestCase
     # with at least one workspace
 
     should "correctly send a command" do
-      assert_equal({ "success" => true }, @i3.command("l"))
+      assert_equal([{ "success" => true }], @i3.command("exec true"))
     end
 
     should "correctly get the workspace list" do
