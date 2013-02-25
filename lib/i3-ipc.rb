@@ -1,5 +1,5 @@
 require 'socket'
-require 'json'
+require 'yajl/json_gem'
 require_relative 'i3-ipc/runner'
 require_relative 'i3-ipc/subscription'
 require_relative 'i3-ipc/manpage'
