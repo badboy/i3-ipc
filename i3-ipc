@@ -9,214 +9,8 @@
 # that build i3-ipc.
 #
 
-module I3
-  Version = '0.2.0-dev'
-end
-require 'optparse'
-require 'pp'
-
-module I3
-  module Runner
-    extend self
-    OUTPUT = $stdout
-
-    def format_output(object, output)
-      if output == :pretty_print
-        PP.pp(object, OUTPUT)
-      elsif output == :json
-        require 'json'
-        OUTPUT.puts object.to_json
-      else
-        OUTPUT.puts object.inspect
-      end
-    end
-
-    def subscribe(path, output)
-      trap('SIGINT') { EM.stop; puts }
-      I3::IPC.subscribe([:workspace], path) do |em, type, data|
-        case type
-        when I3::IPC::MESSAGE_TYPE_GET_WORKSPACES
-          format_output data, output
-        when I3::IPC::EVENT_WORKSPACE
-          em.send_data I3::IPC.format(I3::IPC::MESSAGE_TYPE_GET_WORKSPACES)
-        end
-      end
-    end
-
-    def execute(*args)
-      socket_file = nil
-      type = 0
-      quiet = false
-      output = :default
-
-      opts = OptionParser.new do |opts|
-        opts.banner = "Usage: i3-ipc [options] [message]"
-
-        s_desc = 'Set socket file, defaults to `i3 --get-socketpath` output'
-        opts.on('-s SOCKET', '--socket SOCKET', s_desc) do |s|
-          socket_file = File.expand_path(s)
-        end
-
-        t_desc = 'Set type, 0 = command, 1 = workspace list, 2 = subscribe to workspace event, 3 = output list, 4 = tree list, default: 0'
-        opts.on('-tTYPE', '--type TYPE', Integer, t_desc) do |t|
-          type = t
-        end
-
-        opts.on('-p', '--pretty-print', 'Pretty print reply') do |p|
-          output = :pretty_print
-        end
-
-        opts.on('-j', '--json', 'Output raw json') do |p|
-          output = :json
-        end
-
-        opts.on('-q', '--quiet', %(Don't show reply)) do |q|
-          quiet = q
-        end
-
-        opts.on('-m', '--man', 'Print manual') do
-          I3::Manpage.display("i3-ipc")
-        end
-
-        opts.on('-h', '--help', 'Display this screen') do
-          OUTPUT.puts opts
-          exit
-        end
-      end
-
-      opts.parse!(args)
-
-      socket_file ||= I3::IPC.socket_path
-      i3 = I3::IPC.new(socket_file)
-
-      if type == I3::IPC::MESSAGE_TYPE_SUBSCRIBE
-        subscribe socket_file, output
-      else
-        arg = I3::IPC::COMMANDS.find {|t| t.first == type}
-        if arg
-          if arg.last == :none
-            format_output i3.send(arg[1]), output
-          elsif arg.last == :required
-            payload = args.shift
-            if payload.nil?
-              abort "error: payload needed."
-            else
-              format_output i3.send(arg[1], payload), output
-            end
-          elsif arg.last == :optional
-            payload = args.shift
-            format_output i3.send(arg[1], payload), output
-          end
-        end
-      end
-    end
-  end
-end
-require 'eventmachine'
-
-module I3
-  module Subscription
-    extend self
-
-    class SubscriptionConnection < EM::Connection
-      def self.connect(subscription_list, socket_path=I3::IPC::SOCKET_PATH, &blk)
-        new_klass = Class.new(self)
-        new_klass.send(:define_method, :initialize) do
-          @subscription_list = subscription_list
-          @handler = blk
-        end
-        EM.connect socket_path, new_klass
-      end
-
-      def post_init
-        send_data I3::IPC.format(I3::IPC::MESSAGE_TYPE_SUBSCRIBE,
-                                 @subscription_list.to_json)
-      end
-
-      def receive_data(data)
-        @handler.call(self, *I3::IPC.parse_response(data)) if @handler
-      end
-    end
-
-    def subscribe(subscription_list, socket_path=I3::IPC::SOCKET_PATH, &blk)
-      EM.run do
-        SubscriptionConnection.connect(subscription_list,
-                                       socket_path, &blk)
-      end
-    end
-  end
-end
-module I3
-  module Manpage
-    extend self
-
-    def display(name)
-      puts manpage(name)
-    end
-
-    def manpage(name)
-      return "** Can't find groff(1)" unless groff?
-
-      require 'open3'
-      out = nil
-      Open3.popen3(groff_command) do |stdin, stdout, _|
-        stdin.puts raw_manpage(name)
-        stdin.close
-        out = stdout.read.strip
-      end
-      out
-    end
-
-    def raw_manpage(name)
-      if File.exists? file = File.dirname(__FILE__) + "/../../man/#{name}.1"
-        File.read(file)
-      else
-        DATA.read
-      end
-    end
-
-    def groff?
-      system("which groff > /dev/null")
-    end
-
-    def groff_command
-      "groff -Wall -mtty-char -mandoc -Tascii"
-    end
-
-    def puts(*args)
-      page_stdout
-      super
-    end
-
-    def page_stdout
-      return unless $stdout.tty?
-
-      read, write = IO.pipe
-
-      if Kernel.fork
-        $stdin.reopen(read)
-        read.close
-        write.close
-
-        ENV['LESS'] = 'FSRX'
-
-        Kernel.select [STDIN]
-
-        pager = ENV['PAGER'] || 'less -isr'
-        pager = 'cat' if pager.empty?
-
-        exec pager rescue exec "/bin/sh", "-c", pager
-      else
-        $stdout.reopen(write)
-        $stderr.reopen(write) if $stderr.tty?
-        read.close
-        write.close
-      end
-    end
-  end
-end
 require 'socket'
-require 'json'
+require 'yajl/json_gem'
 
 module I3
   class IPC
@@ -235,11 +29,34 @@ module I3
 
       [6, :get_bar_config, :optional],
     ]
-    MESSAGE_TYPE_GET_WORKSPACES = 1
     MESSAGE_TYPE_SUBSCRIBE = 2
 
     EVENT_MASK = (1 << 31)
     EVENT_WORKSPACE = (EVENT_MASK | 0)
+
+    def self.message_type_subscribe
+      MESSAGE_TYPE_SUBSCRIBE
+    end
+
+    meta = class<<self; self; end
+    COMMANDS.each do |(id, cmd, arg)|
+      meta.instance_eval {
+        define_method "message_type_#{cmd.downcase}" do
+          id
+        end
+      }
+      if arg == :none
+        define_method cmd do
+          write format(id)
+          handle_response id
+        end
+      elsif arg == :optional || arg == :required
+        define_method cmd do |arg|
+          write format(id, arg)
+          handle_response id
+        end
+      end
+    end
 
     class WrongMagicCode < RuntimeError; end # :nodoc:
     class WrongType < RuntimeError; end # :nodoc:
@@ -313,6 +130,214 @@ module I3
 
     def closed?
       @socket.closed?
+    end
+  end
+end
+require 'eventmachine'
+
+module I3
+  module Subscription
+    extend self
+
+    class SubscriptionConnection < EM::Connection
+      def self.connect(subscription_list, socket_path=nil, &blk)
+        new_klass = Class.new(self)
+        new_klass.send(:define_method, :initialize) do
+          @subscription_list = subscription_list
+          @handler = blk
+        end
+        EM.connect socket_path, new_klass
+      end
+
+      def post_init
+        send_data I3::IPC.format(I3::IPC.message_type_subscribe,
+                                 @subscription_list.to_json)
+      end
+
+      def receive_data(data)
+        @handler.call(self, *I3::IPC.parse_response(data)) if @handler
+      end
+    end
+
+    def subscribe(subscription_list, socket_path=nil, &blk)
+      socket_path ||= I3::IPC.socket_path
+      EM.run do
+        SubscriptionConnection.connect(subscription_list,
+                                       socket_path, &blk)
+      end
+    end
+  end
+end
+require 'optparse'
+require 'pp'
+
+module I3
+  module Runner
+    extend self
+    OUTPUT = $stdout
+
+    def format_output(object, output, quiet)
+      return if quiet
+      if output == :pretty_print
+        PP.pp(object, OUTPUT)
+      elsif output == :json
+        require 'json'
+        OUTPUT.puts object.to_json
+      else
+        OUTPUT.puts object.inspect
+      end
+    end
+
+    def subscribe(path, output)
+      trap('SIGINT') { EM.stop; puts }
+      I3::IPC.subscribe([:workspace], path) do |em, type, data|
+        case type
+        when I3::IPC.message_type_get_workspaces
+          format_output data, output, false
+        when I3::IPC::EVENT_WORKSPACE
+          em.send_data I3::IPC.format(I3::IPC.message_type_get_workspaces)
+        end
+      end
+    end
+
+    def execute(*args)
+      socket_file = nil
+      type = 0
+      quiet = false
+      output = :default
+
+      opts = OptionParser.new do |opts|
+        opts.banner = "Usage: i3-ipc [options] [message]"
+
+        s_desc = 'Set socket file, defaults to `i3 --get-socketpath` output'
+        opts.on('-s SOCKET', '--socket SOCKET', s_desc) do |s|
+          socket_file = File.expand_path(s)
+        end
+
+        t_desc = 'Set type, 0 = command, 1 = workspace list, 2 = subscribe to workspace event, 3 = output list, 4 = tree list, default: 0'
+        opts.on('-tTYPE', '--type TYPE', Integer, t_desc) do |t|
+          type = t
+        end
+
+        opts.on('-p', '--pretty-print', 'Pretty print reply') do |p|
+          output = :pretty_print
+        end
+
+        opts.on('-j', '--json', 'Output raw json') do |p|
+          output = :json
+        end
+
+        opts.on('-q', '--quiet', %(Don't show reply)) do |q|
+          quiet = q
+        end
+
+        opts.on('-m', '--man', 'Print manual') do
+          I3::Manpage.display("i3-ipc")
+        end
+
+        opts.on('-h', '--help', 'Display this screen') do
+          OUTPUT.puts opts
+          exit
+        end
+      end
+
+      opts.parse!(args)
+
+      socket_file ||= I3::IPC.socket_path
+
+      if type == I3::IPC.message_type_subscribe
+        subscribe socket_file, output
+      else
+        i3 = I3::IPC.new(socket_file)
+        arg = I3::IPC::COMMANDS.find {|t| t.first == type}
+        if arg
+          if arg.last == :none
+            format_output i3.send(arg[1]), output, quiet
+          elsif arg.last == :required
+            payload = args.shift
+            if payload.nil?
+              abort "error: payload needed."
+            else
+              format_output i3.send(arg[1], payload), output, quiet
+            end
+          elsif arg.last == :optional
+            payload = args.shift
+            format_output i3.send(arg[1], payload), output, quiet
+          end
+        end
+      end
+    end
+  end
+end
+module I3
+  Version = '0.2.0'
+end
+module I3
+  module Manpage
+    extend self
+
+    def display(name)
+      puts manpage(name)
+    end
+
+    def manpage(name)
+      return "** Can't find groff(1)" unless groff?
+
+      require 'open3'
+      out = nil
+      Open3.popen3(groff_command) do |stdin, stdout, _|
+        stdin.puts raw_manpage(name)
+        stdin.close
+        out = stdout.read.strip
+      end
+      out
+    end
+
+    def raw_manpage(name)
+      if File.exists? file = File.dirname(__FILE__) + "/../../man/#{name}.1"
+        File.read(file)
+      else
+        DATA.read
+      end
+    end
+
+    def groff?
+      system("which groff > /dev/null")
+    end
+
+    def groff_command
+      "groff -Wall -mtty-char -mandoc -Tascii"
+    end
+
+    def puts(*args)
+      page_stdout
+      super
+    end
+
+    def page_stdout
+      return unless $stdout.tty?
+
+      read, write = IO.pipe
+
+      if Kernel.fork
+        $stdin.reopen(read)
+        read.close
+        write.close
+
+        ENV['LESS'] = 'FSRX'
+
+        Kernel.select [STDIN]
+
+        pager = ENV['PAGER'] || 'less -isr'
+        pager = 'cat' if pager.empty?
+
+        exec pager rescue exec "/bin/sh", "-c", pager
+      else
+        $stdout.reopen(write)
+        $stderr.reopen(write) if $stderr.tty?
+        read.close
+        write.close
+      end
     end
   end
 end

@@ -6,3 +6,4 @@ pkg
 dist/*
 !dist/PKGBUILD
 !dist/*.install
+Gemfile.lock

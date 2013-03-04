@@ -1,4 +1,4 @@
-require_relative 'lib/i3-ipc/version'
+require './lib/i3-ipc/version'
 Gem::Specification.new do |s|
   s.name              = "i3-ipc"
   s.version           = I3::Version
@@ -19,7 +19,9 @@ Gem::Specification.new do |s|
   uses the ipc socket of i3 to send commands or get information directly from the window manager. Useful for scripting the window manager.'
 desc
 
-  s.add_dependency "eventmachine", [">= 0.12.10"]
-  s.add_development_dependency "shoulda", [">= 2.10.3"]
-  s.add_development_dependency "mocha", [">= 0.9.8"]
+  s.add_dependency "eventmachine", ["~> 0.12.10"]
+  s.add_dependency "yajl-ruby", ["~> 1.1.0"]
+  s.add_development_dependency "shoulda", ["~> 2.10.3"]
+  s.add_development_dependency "mocha", ["~> 0.9.8"]
+  s.add_development_dependency "ronn", ["~> 0.7.3"]
 end
