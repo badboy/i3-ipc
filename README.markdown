@@ -69,7 +69,7 @@ For example you can use the following code to get the actual focused screen:
 
     I3::IPC.subscribe [:workspace] do |em, type, data|
       case type
-      when I3::IPC::MESSAGE_REPLY_GET_WORKSPACES
+      when I3::IPC.message_type_get_workspaces
         data.each do |e|
           if e["focused"]
             puts "focused: %s" % e["name"]
@@ -78,7 +78,7 @@ For example you can use the following code to get the actual focused screen:
           end
         end
       when I3::IPC::EVENT_WORKSPACE
-        em.send_data I3::IPC.format(I3::IPC::MESSAGE_TYPE_GET_WORKSPACES)
+        em.send_data I3::IPC.format(I3::IPC.message_type_get_workspaces)
       end
     end
 

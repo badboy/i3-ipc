@@ -44,9 +44,9 @@ print_workspace_list(i3.get_workspaces)
 
 I3::IPC.subscribe [:workspace] do |em, type, data|
   case type
-  when I3::IPC::MESSAGE_TYPE_GET_WORKSPACES
+  when I3::IPC.message_type_get_workspaces
     print_workspace_list(data)
   when I3::IPC::EVENT_WORKSPACE
-    em.send_data I3::IPC.format(I3::IPC::MESSAGE_TYPE_GET_WORKSPACES)
+    em.send_data I3::IPC.format(I3::IPC.message_type_get_workspaces)
   end
 end
