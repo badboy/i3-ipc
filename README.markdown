@@ -1,6 +1,29 @@
 i3-ipc
 ======
 
+---
+
+# WARNING
+
+This code is old, largely untested and might not even support all features provided by the IPC protocol. I don't have the time to develop this further.
+
+But there is another project that provides a great abstraction of all the IPC stuff: [i3ipc-glib](https://github.com/acrisci/i3ipc-glib).
+
+It's possible to use this library in ruby using [gir_ffi](http://rubygems.org/gems/gir_ffi) and the following code:
+
+```ruby
+require 'gir_ffi'
+
+namespace = 'i3ipc'
+GirFFI.setup namespace
+
+i3 = I3ipc::Connection.new(nil)
+
+i3.command 'focus left'
+```
+
+---
+
 inter-process communication with [i3][], the improved tiling window manager.
 
 Installation
